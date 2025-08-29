@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Todo App</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="pages.css">
+    <link rel="stylesheet" href="footer.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">🛸 AlienWeb Todo</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="privacy.html">Privacy</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <header class="page-header">
+            <h1>🛸 Contact AlienWeb</h1>
+            <p>Reach out across the galaxy</p>
+        </header>
+
+        <main class="page-content">
+            <section class="content-section">
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h2>Get in Touch</h2>
+                        <p>Have questions, suggestions, or feedback about AlienWeb Todo? We're here to help and always excited to hear from our users across the universe.</p>
+                        
+                        <div class="contact-methods">
+                            <div class="contact-method">
+                                <h3>📧 Email</h3>
+                                <p><a href="#" onclick="openGmailContact('General Inquiry')" style="color: var(--accent); text-decoration: none;">hellowsupprt@gmail.com</a></p>
+                                <small>We typically respond within 24 hours</small>
+                            </div>
+                            
+                            <div class="contact-method">
+                                <h3>💬 Feedback</h3>
+                                <p>Your feedback helps us improve our tools and create better experiences for everyone.</p>
+                            </div>
+                            
+                            <div class="contact-method">
+                                <h3>🐛 Bug Reports</h3>
+                                <p>Found a bug? Let us know and we'll fix it as soon as possible.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-form">
+                        <h2>Send us a Message</h2>
+                        <form id="contactForm" action="mailto:hellowsupprt@gmail.com" method="post" enctype="text/plain">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <select id="subject" name="subject" required>
+                                    <option value="">Select a topic</option>
+                                    <option value="feedback">General Feedback</option>
+                                    <option value="bug">Bug Report</option>
+                                    <option value="feature">Feature Request</option>
+                                    <option value="support">Technical Support</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea id="message" name="message" rows="5" required placeholder="Tell us how we can help you..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section">
+                <h2>Frequently Asked Questions</h2>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h3>Is my data safe?</h3>
+                        <p>Yes! All your tasks are stored locally in your browser. We never see or store your personal data on our servers.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>Can I sync across devices?</h3>
+                        <p>Currently, data is stored locally per device. We're working on optional cloud sync features for future releases.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>Is the app really free?</h3>
+                        <p>Yes, completely free with no hidden costs or premium subscriptions required.</p>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <h3>Can I suggest new features?</h3>
+                        <p>Absolutely! We love hearing feature ideas from our users. Use the contact form above to share your suggestions.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function openGmailContact(subject, name = '', email = '', message = '') {
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=hellowsupprt@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(name ? `From: ${name} (${email})\n\nMessage:\n${message}` : 'Hello AlienWeb Team,\n\n')}`;
+            window.open(gmailUrl, '_blank');
+        }
+        
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
+            
+            openGmailContact(subject + ' - ' + name, name, email, message);
+            
+            alert('Gmail opened in new tab. Please click Send to send your message!');
+            this.reset();
+        });
+    </script>
+    <!-- Global Footer -->
+    <footer class="global-footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>🛸 AlienWeb</h3>
+                    <p>Professional productivity tools from another dimension. Enhance your workflow with our suite of advanced applications.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" title="Twitter">T</a>
+                        <a href="#" class="social-link" title="GitHub">G</a>
+                        <a href="#" class="social-link" title="LinkedIn">L</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Products</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">AlienWeb Todo</a></li>
+                        <li><a href="services.html">All Tools</a></li>
+                        <li><a href="#">Habit Tracker (Soon)</a></li>
+                        <li><a href="#">Pomodoro Timer (Soon)</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="contact.html">Help Center</a></li>
+                        <li><a href="contact.html">Bug Reports</a></li>
+                        <li><a href="contact.html">Feature Requests</a></li>
+                        <li><a href="#" onclick="openGmailContact('Email Support')">Email Support</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 AlienWeb. All rights reserved. | Made with ❤️ for productivity enthusiasts</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="dark-mode.js"></script>
+</body>
+</html>
