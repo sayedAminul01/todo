@@ -55,54 +55,30 @@ body {
     min-height: 100vh;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-}
 
-h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: linear-gradient(45deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.02em;
-}
 
-.controls {
-    display: flex;
-    gap: 10px;
-}
 
-.controls button {
+
+.main-controls button {
     background: var(--accent);
     border: none;
-    padding: 12px 16px;
-    border-radius: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: white;
     transition: all 0.3s ease;
     box-shadow: var(--shadow);
-    min-width: 50px;
-    height: 50px;
+    min-width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.controls button:hover {
+.main-controls button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
 }
 
 .add-task {
@@ -120,12 +96,13 @@ h1 {
 #taskInput {
     flex: 1;
     padding: 12px 16px;
-    border: 2px solid transparent;
-    border-radius: 10px;
+    border: 2px solid var(--accent);
+    border-radius: 12px;
     font-size: 1rem;
     background: var(--bg);
     color: var(--text);
     transition: all 0.3s ease;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
 }
 
 #taskInput:focus {
@@ -136,12 +113,13 @@ h1 {
 
 #prioritySelect {
     padding: 12px;
-    border: 2px solid transparent;
-    border-radius: 10px;
+    border: 2px solid var(--success);
+    border-radius: 12px;
     background: var(--bg);
     color: var(--text);
     cursor: pointer;
     transition: all 0.3s ease;
+    box-shadow: 0 0 0 2px rgba(48, 209, 88, 0.1);
 }
 
 #addBtn {
@@ -312,17 +290,173 @@ h1 {
     background: var(--card-bg);
     border: 1px solid var(--border);
     cursor: pointer;
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 8px;
     transition: all 0.3s ease;
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text);
-    margin-left: 5px;
-    min-width: 70px;
-    height: 36px;
+    margin-left: 3px;
+    min-width: 60px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.delete-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+}
+
+.delete-icon {
+    font-size: 0.9rem;
+}
+
+.countdown {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.countdown.urgent {
+    color: var(--danger);
+    animation: pulse 1s infinite;
+}
+
+.countdown.expired {
+    color: var(--danger);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Task Timer */
+.task-timer {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 10px;
+    opacity: 0.8;
+}
+
+.task-timer.active {
+    color: var(--accent);
+    animation: pulse 2s infinite;
+}
+
+.task-timer.completed {
+    color: var(--success);
+}
+
+/* Control Section */
+.control-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: var(--card-bg);
+    padding: 15px 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.main-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.focus-options {
+    display: flex;
+    gap: 5px;
+}
+
+.focus-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    color: var(--text);
+}
+
+.focus-btn:hover,
+.focus-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+/* Hide Details Mode */
+.task-item.hide-details .task-date {
+    display: none;
+}
+
+/* Focus Mode - Hide Everything Except Tasks */
+body.focus-mode .quick-stats,
+body.focus-mode .filters,
+body.focus-mode .task-stats,
+body.focus-mode .add-task,
+body.focus-mode .bulk-actions,
+body.focus-mode .global-footer,
+body.focus-mode .ad-container {
+    display: none !important;
+}
+
+body.focus-mode .container {
+    padding: 10px;
+}
+
+/* Keep control section visible in focus mode for toggle */
+body.focus-mode .control-section {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    padding: 10px 0;
+}
+
+body.focus-mode .main-controls {
+    display: none;
+}
+
+body.focus-mode .focus-options {
+    justify-content: center;
+    width: 100%;
+}
+
+/* Focus mode exit button styling */
+body.focus-mode .focus-btn {
+    background: rgb(41, 40, 40);
+    color: white;
+    border-color: gray;
+    font-weight: 600;
+}
+
+body.focus-mode #focusModeBtn::after {
+    content: ' Exit';
+    font-size: 0.8rem;
+    margin-left: 5px;
+}
+
+.task-item.focus-mode {
+    padding: 10px 15px;
+}
+
+.task-actions.minimal {
+    gap: 2px;
+}
+
+.task-actions.minimal button {
+    min-width: 40px;
+    height: 28px;
+    padding: 4px 8px;
 }
 
 /* Drag Handle */
@@ -433,12 +567,13 @@ h1 {
 /* Enhanced Add Task */
 #dueDateInput {
     padding: 12px;
-    border: 2px solid transparent;
-    border-radius: 10px;
+    border: 2px solid var(--warning);
+    border-radius: 12px;
     background: var(--bg);
     color: var(--text);
     transition: all 0.3s ease;
     min-width: 150px;
+    box-shadow: 0 0 0 2px rgba(255, 159, 10, 0.1);
 }
 
 #dueDateInput:focus {
@@ -452,19 +587,7 @@ h1 {
     margin-bottom: 20px;
 }
 
-.search-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid transparent;
-    border-radius: 25px;
-    font-size: 1rem;
-    background: var(--card-bg);
-    color: var(--text);
-    backdrop-filter: blur(10px);
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-    transition: all 0.3s ease;
-}
+
 
 .search-input:focus {
     outline: none;
@@ -653,6 +776,41 @@ h1 {
         justify-content: center;
         width: 100%;
         margin-top: 10px;
+        gap: 5px;
+    }
+    
+    .task-actions button {
+        min-width: 50px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    
+    .delete-content {
+        gap: 0;
+    }
+    
+    .countdown {
+        font-size: 0.6rem;
+    }
+    
+    .focus-options {
+        flex-direction: column;
+        gap: 3px;
+    }
+    
+    .focus-btn {
+        padding: 6px 8px;
+        font-size: 0.9rem;
+    }
+    
+    .control-section {
+        flex-direction: column;
+        gap: 15px;
+        padding: 12px 15px;
+    }
+    
+    .main-controls {
+        justify-content: center;
     }
     
     .bulk-actions {
@@ -670,7 +828,36 @@ h1 {
     }
     
     .task-item {
-        padding: 12px 15px;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+    }
+    
+    .task-text {
+        font-size: 0.9rem;
+    }
+    
+    .priority-badge {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+    }
+    
+    .task-timer {
+        font-size: 0.65rem;
+        margin-left: 5px;
+    }
+    
+    .task-date {
+        font-size: 0.7rem;
+    }
+    
+    .drag-handle {
+        font-size: 1rem;
+        padding: 3px;
+    }
+    
+    .task-checkbox {
+        width: 16px;
+        height: 16px;
     }
     
     .filter-btn {
