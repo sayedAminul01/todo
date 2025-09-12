@@ -3,7 +3,9 @@ class TodoApp {
         this.tasks = JSON.parse(localStorage.getItem('alienwebTasks')) || [];
         this.currentFilter = 'all';
         this.darkMode = JSON.parse(localStorage.getItem('alienwebDarkMode')) || false;
-        this.searchQuery = '';
+        this.hideCompleted = false;
+        this.focusMode = false;
+        this.hideDetails = false;
         this.init();
     }
 
@@ -12,6 +14,7 @@ class TodoApp {
         this.applyTheme();
         this.render();
         this.updateStats();
+        this.startTimerUpdates();
     }
 
     bindEvents() {
@@ -41,7 +44,10 @@ class TodoApp {
         }
         document.getElementById('clearCompleted').addEventListener('click', () => this.clearCompleted());
         document.getElementById('clearAll').addEventListener('click', () => this.clearAll());
-        document.getElementById('searchInput').addEventListener('input', (e) => this.handleSearch(e.target.value));
+
+        document.getElementById('hideCompletedBtn').addEventListener('click', () => this.toggleHideCompleted());
+        document.getElementById('focusModeBtn').addEventListener('click', () => this.toggleFocusMode());
+        document.getElementById('hideDetailsBtn').addEventListener('click', () => this.toggleHideDetails());
         
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', (e) => this.setFilter(e.target.dataset.filter));
@@ -63,7 +69,9 @@ class TodoApp {
             dueDate: dueDate || null,
             completed: false,
             createdAt: new Date().toISOString(),
-            completedAt: null
+            completedAt: null,
+            timerStarted: new Date().toISOString(),
+            timeSpent: 0
         };
         
         this.tasks.unshift(task);
@@ -77,6 +85,17 @@ class TodoApp {
     toggleTask(id) {
         const task = this.tasks.find(t => t.id === id);
         if (task) {
+            if (!task.completed) {
+                // Mark as completed and calculate time spent
+                const now = new Date();
+                const startTime = new Date(task.timerStarted);
+                task.timeSpent = Math.floor((now - startTime) / 1000); // in seconds
+                task.completedAt = now.toISOString();
+            } else {
+                // Mark as incomplete and restart timer
+                task.timerStarted = new Date().toISOString();
+                task.completedAt = null;
+            }
             task.completed = !task.completed;
             this.saveTasks();
             this.render();
@@ -116,11 +135,9 @@ class TodoApp {
     getFilteredTasks() {
         let filtered = this.tasks;
         
-        // Apply search filter
-        if (this.searchQuery) {
-            filtered = filtered.filter(t => 
-                t.text.toLowerCase().includes(this.searchQuery.toLowerCase())
-            );
+        // Apply hide completed filter
+        if (this.hideCompleted) {
+            filtered = filtered.filter(t => !t.completed);
         }
         
         // Apply category filter
@@ -135,6 +152,8 @@ class TodoApp {
                 return filtered.filter(t => this.isDueToday(t));
             case 'overdue':
                 return filtered.filter(t => this.isOverdue(t));
+            case 'hide-completed':
+                return filtered.filter(t => !t.completed);
             default:
                 return filtered;
         }
@@ -146,19 +165,28 @@ class TodoApp {
         
         taskList.innerHTML = filteredTasks.map(task => {
             const dueDateInfo = this.getDueDateInfo(task);
+            const hideDetailsClass = this.hideDetails ? 'hide-details' : '';
+            const focusModeClass = this.focusMode ? 'focus-mode' : '';
+            
             return `
-                <li class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}" draggable="true">
+                <li class="task-item ${task.completed ? 'completed' : ''} ${hideDetailsClass} ${focusModeClass}" data-id="${task.id}" draggable="true">
                     <div class="drag-handle" title="Drag to reorder">☰</div>
                     <div class="task-checkbox ${task.completed ? 'checked' : ''}" 
                          onclick="app.toggleTask(${task.id})"></div>
                     <div class="task-content">
                         <span class="task-text">${this.escapeHtml(task.text)}</span>
-                        ${dueDateInfo.html}
+                        ${this.hideDetails ? '' : dueDateInfo.html}
+                        ${this.getTaskTimer(task)}
                     </div>
                     <span class="priority-badge priority-${task.priority}" onclick="app.editPriority(${task.id})" title="Click to change priority">${task.priority}</span>
-                    <div class="task-actions">
-                        <button class="edit-btn" onclick="app.editTask(${task.id})" title="Edit">✏️</button>
-                        <button class="delete-btn" onclick="app.deleteTask(${task.id})" title="Delete">🗑️</button>
+                    <div class="task-actions ${this.focusMode ? 'minimal' : ''}">
+                        ${this.focusMode ? '' : `<button class="edit-btn" onclick="app.editTask(${task.id})" title="Edit">✏️</button>`}
+                        <button class="delete-btn" onclick="app.deleteTask(${task.id})" title="Delete">
+                            <div class="delete-content">
+                                <span class="delete-icon">🗑️</span>
+                                ${this.getCountdownTimer(task)}
+                            </div>
+                        </button>
                     </div>
                 </li>
             `;
@@ -327,17 +355,87 @@ class TodoApp {
             });
         });
     }
+    
+    getCountdownTimer(task) {
+        if (!task.dueDate) return '';
+        
+        const now = new Date();
+        const dueDate = new Date(task.dueDate + 'T23:59:59');
+        const timeDiff = dueDate - now;
+        
+        if (timeDiff <= 0) return '<span class="countdown expired">⏰</span>';
+        
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        
+        if (days > 0) {
+            return `<span class="countdown">${days}d</span>`;
+        } else if (hours > 0) {
+            return `<span class="countdown">${hours}h</span>`;
+        } else {
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            return `<span class="countdown urgent">${minutes}m</span>`;
+        }
+    }
+    
+    toggleHideCompleted() {
+        this.hideCompleted = !this.hideCompleted;
+        document.getElementById('hideCompletedBtn').classList.toggle('active', this.hideCompleted);
+        this.render();
+    }
+    
+    toggleFocusMode() {
+        this.focusMode = !this.focusMode;
+        document.getElementById('focusModeBtn').classList.toggle('active', this.focusMode);
+        document.body.classList.toggle('focus-mode', this.focusMode);
+        this.render();
+    }
+    
+    toggleHideDetails() {
+        this.hideDetails = !this.hideDetails;
+        document.getElementById('hideDetailsBtn').classList.toggle('active', this.hideDetails);
+        this.render();
+    }
+    
+    getTaskTimer(task) {
+        if (task.completed && task.timeSpent) {
+            const hours = Math.floor(task.timeSpent / 3600);
+            const minutes = Math.floor((task.timeSpent % 3600) / 60);
+            if (hours > 0) {
+                return `<span class="task-timer completed">⏱️ ${hours}h ${minutes}m</span>`;
+            } else {
+                return `<span class="task-timer completed">⏱️ ${minutes}m</span>`;
+            }
+        } else if (!task.completed && task.timerStarted) {
+            const now = new Date();
+            const startTime = new Date(task.timerStarted);
+            const elapsed = Math.floor((now - startTime) / 1000);
+            const hours = Math.floor(elapsed / 3600);
+            const minutes = Math.floor((elapsed % 3600) / 60);
+            if (hours > 0) {
+                return `<span class="task-timer active">⏱️ ${hours}h ${minutes}m</span>`;
+            } else {
+                return `<span class="task-timer active">⏱️ ${minutes}m</span>`;
+            }
+        }
+        return '';
+    }
+    
+    startTimerUpdates() {
+        setInterval(() => {
+            const hasActiveTasks = this.tasks.some(t => !t.completed && t.timerStarted);
+            if (hasActiveTasks) {
+                this.render();
+            }
+        }, 60000); // Update every minute
+    }
 
     saveTasks() {
         localStorage.setItem('alienwebTasks', JSON.stringify(this.tasks));
         localStorage.setItem('alienwebDarkMode', JSON.stringify(this.darkMode));
     }
     
-    handleSearch(query) {
-        this.searchQuery = query;
-        this.render();
-    }
-    
+
     isDueToday(task) {
         if (!task.dueDate) return false;
         const today = new Date().toISOString().split('T')[0];
